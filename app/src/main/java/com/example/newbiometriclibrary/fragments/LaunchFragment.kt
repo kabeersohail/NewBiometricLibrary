@@ -51,16 +51,6 @@ class LaunchFragment : Fragment() {
         }
     }
 
-    private val onsetNewPassword = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
-        if(it.resultCode == Activity.RESULT_OK || it.resultCode == Activity.RESULT_FIRST_USER){
-            val fingerprintIntent = Intent(ACTION_FINGERPRINT_ENROLL)
-            showToastAndLog("Launching ACTION_FINGERPRINT_ENROLL")
-            onFingerprintEnrollResult.launch(fingerprintIntent)
-        } else if(it.resultCode == Activity.RESULT_CANCELED){
-            showToastAndLog("New password setup cancelled")
-        }
-    }
-
     private val biometricAuthCallback = object : BiometricPrompt.AuthenticationCallback() {
 
         override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
@@ -93,9 +83,6 @@ class LaunchFragment : Fragment() {
         biometricManager = BiometricManager.from(requireContext())
 
         binding.authenticate.setOnClickListener {
-//            justCheckIfCanAuthenticateAndShowToastAndLog(BIOMETRIC_WEAK)
-//            justCheckIfCanAuthenticateAndShowToastAndLog(BIOMETRIC_STRONG)
-//            justCheckIfCanAuthenticateAndShowToastAndLog(DEVICE_CREDENTIAL)
 
             when (biometricManager.canAuthenticate(BIOMETRIC_WEAK)) {
                 BiometricManager.BIOMETRIC_SUCCESS -> {
@@ -120,8 +107,9 @@ class LaunchFragment : Fragment() {
                     } else {
                         showToastAndLog("ACTION_BIOMETRIC_ENROLL not supported on API ${Build.VERSION.SDK_INT} , supports from API 30 ")
 
-                        val setNewPassword = Intent(ACTION_SET_NEW_PASSWORD)
-                        onsetNewPassword.launch(setNewPassword)
+                        val fingerprintEnrollIntent = Intent(ACTION_FINGERPRINT_ENROLL)
+                        showToastAndLog("Launching ACTION_FINGERPRINT_ENROLL")
+                        onFingerprintEnrollResult.launch(fingerprintEnrollIntent)
                     }
 
                 }
