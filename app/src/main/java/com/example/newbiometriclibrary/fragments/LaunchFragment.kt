@@ -122,9 +122,6 @@ class LaunchFragment : Fragment() {
 
                         val setNewPassword = Intent(ACTION_SET_NEW_PASSWORD)
                         onsetNewPassword.launch(setNewPassword)
-//                        val fingerprintEnrollIntent = Intent(ACTION_FINGERPRINT_ENROLL)
-//                        showToastAndLog("Launching ACTION_FINGERPRINT_ENROLL")
-//                        onFingerprintEnrollResult.launch(fingerprintEnrollIntent)
                     }
 
                 }
@@ -145,32 +142,6 @@ class LaunchFragment : Fragment() {
         val executor = ContextCompat.getMainExecutor(requireContext())
         val biometricPrompt = BiometricPrompt(requireActivity(), executor, biometricAuthCallback)
         biometricPrompt.authenticate(promptInfo)
-    }
-
-    private fun justCheckIfCanAuthenticateAndShowToastAndLog(authenticatorType: Int) {
-        when (biometricManager.canAuthenticate(authenticatorType)) {
-            BiometricManager.BIOMETRIC_SUCCESS -> {
-                showToastAndLog("BIOMETRIC_SUCCESS")
-            }
-            BiometricManager.BIOMETRIC_STATUS_UNKNOWN -> {
-                showToastAndLog("BIOMETRIC_STATUS_UNKNOWN")
-            }
-            BiometricManager.BIOMETRIC_ERROR_UNSUPPORTED -> {
-                showToastAndLog("BIOMETRIC_ERROR_UNSUPPORTED")
-            }
-            BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE -> {
-                showToastAndLog("BIOMETRIC_ERROR_HW_UNAVAILABLE")
-            }
-            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
-                showToastAndLog("BIOMETRIC_ERROR_NONE_ENROLLED")
-            }
-            BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
-                showToastAndLog("BIOMETRIC_ERROR_NO_HARDWARE")
-            }
-            BiometricManager.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED -> {
-                showToastAndLog("BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED")
-            }
-        }
     }
 
     private fun showToastAndLog(message: String) {
