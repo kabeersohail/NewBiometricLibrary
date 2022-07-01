@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">NewBiometricLibrary</string>
+    <string name="launch_screen">Launch screen</string>
+    <string name="authenticate">Authenticate</string>
+
+</resources>
