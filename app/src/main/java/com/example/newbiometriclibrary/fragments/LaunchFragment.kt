@@ -25,6 +25,7 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.newbiometriclibrary.databinding.FragmentLaunchBinding
+import com.example.newbiometriclibrary.utils.Constants.NOTE_5_PRO
 
 
 class LaunchFragment : Fragment() {
@@ -59,6 +60,10 @@ class LaunchFragment : Fragment() {
 
     private val onsetNewPassword = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         if(it.resultCode == Activity.RESULT_OK || it.resultCode == Activity.RESULT_FIRST_USER){
+            val fingerprintManager: FingerprintManager = requireActivity().getSystemService(FINGERPRINT_SERVICE) as FingerprintManager
+            if(!fingerprintManager.hasEnrolledFingerprints()){
+                fingerprintEnroll()
+            }
             showToastAndLog("onSetNewPassword success")
         } else if(it.resultCode == Activity.RESULT_CANCELED){
             showToastAndLog("onsetNewPassword cancelled")
@@ -151,6 +156,18 @@ class LaunchFragment : Fragment() {
         showToastAndLog("possibilitiesForAPI28()")
         showToastAndLog("ACTION_BIOMETRIC_ENROLL not supported on API ${Build.VERSION.SDK_INT} , supports from API 30 ")
 
+        showToastAndLog("${Build.MODEL} ${Build.MANUFACTURER}")
+
+        if(Build.MODEL == NOTE_5_PRO){
+            val setNewPasswordIntent = Intent(ACTION_SET_NEW_PASSWORD)
+            onsetNewPassword.launch(setNewPasswordIntent)
+        } else {
+            fingerprintEnroll()
+        }
+    }
+
+    // Added in 28
+    private fun fingerprintEnroll() {
         val fingerprintEnrollIntent = Intent(ACTION_FINGERPRINT_ENROLL)
         showToastAndLog("Launching ACTION_FINGERPRINT_ENROLL")
         onFingerprintEnrollResult.launch(fingerprintEnrollIntent)
