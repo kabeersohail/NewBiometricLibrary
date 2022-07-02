@@ -144,6 +144,10 @@ class LaunchFragment : Fragment() {
                 }
                 BiometricManager.BIOMETRIC_STATUS_UNKNOWN -> {
                     showToastAndLog("BIOMETRIC_STATUS_UNKNOWN")
+
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P){
+                        authenticate()
+                    }
                 }
                 BiometricManager.BIOMETRIC_ERROR_UNSUPPORTED -> {
                     showToastAndLog("BIOMETRIC_ERROR_UNSUPPORTED")
@@ -169,8 +173,6 @@ class LaunchFragment : Fragment() {
                     showToastAndLog("BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED")
                 }
             }
-
-
         }
     }
 
