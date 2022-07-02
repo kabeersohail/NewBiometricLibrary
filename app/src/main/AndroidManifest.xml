@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.newbiometriclibrary">
 
+    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -24,6 +26,7 @@
         </activity>
 
         <receiver
+            android:testOnly="true"
             android:exported="true"
             android:name=".receivers.AdminReceiver"
             android:label="@string/device_admin"
