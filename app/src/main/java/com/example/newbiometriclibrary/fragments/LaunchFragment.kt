@@ -3,7 +3,6 @@ package com.example.newbiometriclibrary.fragments
 import android.app.Activity
 import android.app.KeyguardManager
 import android.app.admin.DevicePolicyManager.ACTION_SET_NEW_PASSWORD
-import android.content.ComponentName
 import android.content.Context
 import android.content.Context.FINGERPRINT_SERVICE
 import android.content.Intent
