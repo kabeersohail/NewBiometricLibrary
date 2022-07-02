@@ -4,6 +4,8 @@ import android.app.Activity
 import android.app.KeyguardManager
 import android.app.admin.DevicePolicyManager
 import android.app.admin.DevicePolicyManager.ACTION_SET_NEW_PASSWORD
+import android.app.admin.DevicePolicyManager.PASSWORD_QUALITY_BIOMETRIC_WEAK
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -12,7 +14,6 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
 import android.provider.Settings.ACTION_FINGERPRINT_ENROLL
-import android.provider.Settings.ACTION_SECURITY_SETTINGS
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -25,6 +26,7 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.newbiometriclibrary.databinding.FragmentLaunchBinding
+import com.example.newbiometriclibrary.receivers.AdminReceiver
 
 
 class LaunchFragment : Fragment() {
@@ -140,21 +142,32 @@ class LaunchFragment : Fragment() {
                     } else {
                         showToastAndLog("ACTION_FINGERPRINT_ENROLL not supported on API ${Build.VERSION.SDK_INT} , supports from API 28")
 
+                        // need to check if condition is necessary
                         if(keyguardManager.isDeviceSecure){
                             val confirmDeviceCredentialIntent: Intent = keyguardManager.createConfirmDeviceCredentialIntent("Title", "description")
                             onConfirmDeviceCredential.launch(confirmDeviceCredentialIntent)
                         } else {
-                            showToastAndLog("Here brother")
-//                            val securitySettingsIntent = Intent(ACTION_SECURITY_SETTINGS)
-//                            startActivity(securitySettingsIntent)
-//
-//                            showToastAndLog("non enrolled")
 
-                            // In admin app you can use this
-                            val setNewPassword = Intent(ACTION_SET_NEW_PASSWORD)
-                            onsetNewPassword.launch(setNewPassword)
+                            authenticate()
+
+//                            showToastAndLog("Here brother")
+////                            val securitySettingsIntent = Intent(ACTION_SECURITY_SETTINGS)
+////                            startActivity(securitySettingsIntent)
+////
+////                            showToastAndLog("non enrolled")
 //
-//                            showToastAndLog("non enrolled")
+//                            // In admin app you can use this
+//
+//                            val componentName = ComponentName(requireActivity(), AdminReceiver::class.java)
+//
+//
+//                            val devicePolicyManager: DevicePolicyManager  = requireActivity().getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
+//                            devicePolicyManager.setPasswordQuality(componentName, PASSWORD_QUALITY_BIOMETRIC_WEAK)
+//
+//                            val setNewPassword = Intent(ACTION_SET_NEW_PASSWORD)
+//                            onsetNewPassword.launch(setNewPassword)
+////
+////                            showToastAndLog("non enrolled")
                         }
                     }
 

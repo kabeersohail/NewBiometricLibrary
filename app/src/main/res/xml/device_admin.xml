@@ -1,0 +1,42 @@
+<device-admin>
+    <uses-policies>
+
+        <!-- DPC -->
+        <limit-password />
+        <watch-login />
+        <reset-password />
+        <force-lock />
+        <wipe-data />
+        <expire-password />
+        <encrypted-storage />
+        <disable-camera />
+        <disable-keyguard-features />
+
+
+        <!-- LG GATE -->
+        <lg-prevent-admin />
+        <lg-app-forcecontrol />
+        <disable-camera />
+        <lg-install-app />
+        <lg-disable-app />
+        <lg-uninstall-app />
+        <lg-disable-airplane-mode />
+        <lg-disable-nfc />
+        <lg-disable-browser />
+        <lg-disable-data-roaming />
+        <lg-disable-dev-mode />
+        <lg-disable-deviceowner-provisioning-via-adb />
+        <lg-disable-gps />
+        <wipe-data />
+        <lg-app-forcecontrol />
+        <lg-disable-tethering />
+        <lg-disable-nfc />
+        <lg-disable-install-app />
+        <lg-disable-poweroff />
+        <lg-disable-messaging />
+        <lg-prevent-swiping-the-status-bar />
+        <lg-data-usage-setting />
+        <lg-turnon-device />
+        <lg-prevent-outgoing-calls />
+    </uses-policies>
+</device-admin>
