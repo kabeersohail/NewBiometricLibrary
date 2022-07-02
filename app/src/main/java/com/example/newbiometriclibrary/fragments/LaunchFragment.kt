@@ -1,7 +1,10 @@
 package com.example.newbiometriclibrary.fragments
 
 import android.app.Activity
+import android.app.KeyguardManager
+import android.app.admin.DevicePolicyManager
 import android.app.admin.DevicePolicyManager.ACTION_SET_NEW_PASSWORD
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -9,6 +12,7 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
 import android.provider.Settings.ACTION_FINGERPRINT_ENROLL
+import android.provider.Settings.ACTION_SECURITY_SETTINGS
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -27,6 +31,8 @@ class LaunchFragment : Fragment() {
 
     private lateinit var binding: FragmentLaunchBinding
     private lateinit var biometricManager: BiometricManager
+    private lateinit var keyguardManager: KeyguardManager
+
 
     private val promptInfo = BiometricPrompt.PromptInfo.Builder()
         .setTitle("Unlock screen")
@@ -45,9 +51,23 @@ class LaunchFragment : Fragment() {
 
     private val onFingerprintEnrollResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         if(it.resultCode == Activity.RESULT_OK){
-            showToastAndLog("Fingerprint enrolled")
+            showToastAndLog("onFingerprintEnrollResult")
         } else {
-            showToastAndLog("Fingerprint enroll cancelled")
+            showToastAndLog("onFingerprintEnrollResult cancelled")
+        }
+    }
+
+    private val onConfirmDeviceCredential = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+        if(it.resultCode == Activity.RESULT_OK){
+            showToastAndLog("onConfirmDeviceCredential Success")
+        }
+    }
+
+    private val onsetNewPassword = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+        if(it.resultCode == Activity.RESULT_OK || it.resultCode == Activity.RESULT_FIRST_USER){
+            showToastAndLog("onSetNewPassword success")
+        } else if(it.resultCode == Activity.RESULT_CANCELED){
+            showToastAndLog("onsetNewPassword cancelled")
         }
     }
 
@@ -81,6 +101,13 @@ class LaunchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         biometricManager = BiometricManager.from(requireContext())
+        keyguardManager = requireActivity().getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+
+        justCheckIfCanAuthenticateAndShowToastAndLog(BIOMETRIC_WEAK)
+        justCheckIfCanAuthenticateAndShowToastAndLog(BIOMETRIC_STRONG)
+        justCheckIfCanAuthenticateAndShowToastAndLog(DEVICE_CREDENTIAL)
+
+
 
         binding.authenticate.setOnClickListener {
 
@@ -104,12 +131,31 @@ class LaunchFragment : Fragment() {
                         val biometricEnrollIntent = Intent(Settings.ACTION_BIOMETRIC_ENROLL)
                         showToastAndLog("Launching ACTION_BIOMETRIC_ENROLL")
                         onBiometricEnrollmentResult.launch(biometricEnrollIntent)
-                    } else {
+                    } else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P){
                         showToastAndLog("ACTION_BIOMETRIC_ENROLL not supported on API ${Build.VERSION.SDK_INT} , supports from API 30 ")
 
                         val fingerprintEnrollIntent = Intent(ACTION_FINGERPRINT_ENROLL)
                         showToastAndLog("Launching ACTION_FINGERPRINT_ENROLL")
                         onFingerprintEnrollResult.launch(fingerprintEnrollIntent)
+                    } else {
+                        showToastAndLog("ACTION_FINGERPRINT_ENROLL not supported on API ${Build.VERSION.SDK_INT} , supports from API 28")
+
+                        if(keyguardManager.isDeviceSecure){
+                            val confirmDeviceCredentialIntent: Intent = keyguardManager.createConfirmDeviceCredentialIntent("Title", "description")
+                            onConfirmDeviceCredential.launch(confirmDeviceCredentialIntent)
+                        } else {
+                            showToastAndLog("Here brother")
+//                            val securitySettingsIntent = Intent(ACTION_SECURITY_SETTINGS)
+//                            startActivity(securitySettingsIntent)
+//
+//                            showToastAndLog("non enrolled")
+
+                            // In admin app you can use this
+                            val setNewPassword = Intent(ACTION_SET_NEW_PASSWORD)
+                            onsetNewPassword.launch(setNewPassword)
+//
+//                            showToastAndLog("non enrolled")
+                        }
                     }
 
                 }
@@ -135,6 +181,32 @@ class LaunchFragment : Fragment() {
     private fun showToastAndLog(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
         Log.d("SOHAIL", message)
+    }
+
+    private fun justCheckIfCanAuthenticateAndShowToastAndLog(authenticatorType: Int) {
+        when (biometricManager.canAuthenticate(authenticatorType)) {
+            BiometricManager.BIOMETRIC_SUCCESS -> {
+                showToastAndLog("BIOMETRIC_SUCCESS")
+            }
+            BiometricManager.BIOMETRIC_STATUS_UNKNOWN -> {
+                showToastAndLog("BIOMETRIC_STATUS_UNKNOWN")
+            }
+            BiometricManager.BIOMETRIC_ERROR_UNSUPPORTED -> {
+                showToastAndLog("BIOMETRIC_ERROR_UNSUPPORTED")
+            }
+            BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE -> {
+                showToastAndLog("BIOMETRIC_ERROR_HW_UNAVAILABLE")
+            }
+            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
+                showToastAndLog("BIOMETRIC_ERROR_NONE_ENROLLED")
+            }
+            BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
+                showToastAndLog("BIOMETRIC_ERROR_NO_HARDWARE")
+            }
+            BiometricManager.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED -> {
+                showToastAndLog("BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED")
+            }
+        }
     }
 
 }
