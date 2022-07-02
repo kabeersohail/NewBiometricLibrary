@@ -1,15 +1,12 @@
 package com.example.newbiometriclibrary.fragments
 
 import android.app.Activity
-import android.app.ActivityManager
 import android.app.KeyguardManager
 import android.app.admin.DevicePolicyManager.ACTION_SET_NEW_PASSWORD
 import android.content.ComponentName
 import android.content.Context
-import android.content.Context.ACTIVITY_SERVICE
 import android.content.Context.FINGERPRINT_SERVICE
 import android.content.Intent
-import android.graphics.Bitmap
 import android.hardware.fingerprint.FingerprintManager
 import android.os.Build
 import android.os.Bundle
@@ -61,12 +58,6 @@ class LaunchFragment : Fragment() {
         }
     }
 
-    private val onConfirmDeviceCredential = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
-        if(it.resultCode == Activity.RESULT_OK){
-            showToastAndLog("onConfirmDeviceCredential Success")
-        }
-    }
-
     private val onsetNewPassword = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         if(it.resultCode == Activity.RESULT_OK || it.resultCode == Activity.RESULT_FIRST_USER){
             showToastAndLog("onSetNewPassword success")
@@ -93,29 +84,6 @@ class LaunchFragment : Fragment() {
         }
     }
 
-    private val fingerprintAuthenticationCallback = object : FingerprintManager.AuthenticationCallback() {
-        override fun onAuthenticationError(errorCode: Int, errString: CharSequence?) {
-            super.onAuthenticationError(errorCode, errString)
-            showToastAndLog("fingerprint auth error")
-        }
-
-        override fun onAuthenticationFailed() {
-            super.onAuthenticationFailed()
-            showToastAndLog("fingerprint auth failed")
-        }
-
-        override fun onAuthenticationSucceeded(result: FingerprintManager.AuthenticationResult?) {
-            super.onAuthenticationSucceeded(result)
-            showToastAndLog("fingerprint auth failed")
-        }
-
-        override fun onAuthenticationHelp(helpCode: Int, helpString: CharSequence?) {
-            super.onAuthenticationHelp(helpCode, helpString)
-            showToastAndLog("fingerprint auth help")
-        }
-    }
-
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -132,8 +100,6 @@ class LaunchFragment : Fragment() {
         justCheckIfCanAuthenticateAndShowToastAndLog(BIOMETRIC_WEAK)
         justCheckIfCanAuthenticateAndShowToastAndLog(BIOMETRIC_STRONG)
         justCheckIfCanAuthenticateAndShowToastAndLog(DEVICE_CREDENTIAL)
-
-
 
         binding.authenticate.setOnClickListener {
 
@@ -164,7 +130,6 @@ class LaunchFragment : Fragment() {
                     } else {
                         possibilitiesForAPI24()
                     }
-
                 }
                 BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
                     showToastAndLog("BIOMETRIC_ERROR_NO_HARDWARE")
@@ -196,16 +161,8 @@ class LaunchFragment : Fragment() {
         showToastAndLog("possibilitiesForAPI24()")
         showToastAndLog("ACTION_FINGERPRINT_ENROLL not supported on API ${Build.VERSION.SDK_INT} , supports from API 28")
 
-//        val fingerprintManager: FingerprintManagerCompat = FingerprintManagerCompat.from(requireContext())
         val fingerprintManager: FingerprintManager = requireActivity().getSystemService(FINGERPRINT_SERVICE) as FingerprintManager
         if(fingerprintManager.isHardwareDetected){
-
-            val componentName = ComponentName("com.android.settings", "com.android.settings.fingerprint.FingerprintEnrollIntroduction")
-            val intent = Intent().apply {
-                component = componentName
-            }
-
-            startActivity(intent)
 
             showToastAndLog("Hardware detected")
 
