@@ -117,6 +117,8 @@ class LaunchFragment : Fragment() {
 
                     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P){
                         authenticate()
+                    } else {
+                        showToastAndLog("Status unknown")
                     }
                 }
                 BiometricManager.BIOMETRIC_ERROR_UNSUPPORTED -> {
@@ -137,6 +139,11 @@ class LaunchFragment : Fragment() {
                 }
                 BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
                     showToastAndLog("BIOMETRIC_ERROR_NO_HARDWARE")
+                    if(!keyguardManager.isDeviceSecure) {
+                        launchSetNewPasswordIntent()
+                    } else {
+                        authenticate()
+                    }
                 }
                 BiometricManager.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED -> {
                     showToastAndLog("BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED")
@@ -159,8 +166,7 @@ class LaunchFragment : Fragment() {
         showToastAndLog("${Build.MODEL} ${Build.MANUFACTURER}")
 
         if(Build.MODEL == NOTE_5_PRO){
-            val setNewPasswordIntent = Intent(ACTION_SET_NEW_PASSWORD)
-            onsetNewPassword.launch(setNewPasswordIntent)
+            launchSetNewPasswordIntent()
         } else {
             fingerprintEnroll()
         }
@@ -186,10 +192,15 @@ class LaunchFragment : Fragment() {
                 showToastAndLog("Yep")
             } else {
                 showToastAndLog("Nope")
-                val setNewPasswordIntent = Intent(ACTION_SET_NEW_PASSWORD)
-                onsetNewPassword.launch(setNewPasswordIntent)
+                launchSetNewPasswordIntent()
             }
         }
+    }
+
+    private fun launchSetNewPasswordIntent() {
+        showToastAndLog("Launching set new password intent")
+        val setNewPasswordIntent = Intent(ACTION_SET_NEW_PASSWORD)
+        onsetNewPassword.launch(setNewPasswordIntent)
     }
 
     private fun authenticate() {
