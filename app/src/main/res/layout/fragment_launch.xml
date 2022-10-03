@@ -32,6 +32,26 @@
             app:layout_constraintTop_toBottomOf="@id/launch_screen_text"
             android:layout_height="wrap_content"/>
 
+        <TextView
+            app:layout_constraintTop_toTopOf="parent"
+            android:id="@+id/one"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:background="#caf"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/two"
+            app:layout_constraintHorizontal_weight="1"/>
+
+        <TextView
+            app:layout_constraintTop_toTopOf="parent"
+            android:id="@+id/two"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:background="#fac"
+            app:layout_constraintLeft_toRightOf="@+id/one"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintHorizontal_weight="9"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>
